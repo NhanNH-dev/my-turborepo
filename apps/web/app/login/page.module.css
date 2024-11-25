@@ -1,0 +1,10 @@
+.login_page {
+  position: relative;
+  height: 100vh;
+  .page {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
