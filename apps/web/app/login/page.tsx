@@ -1,85 +1,64 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import styles from "./page.module.css";
+import LoginForm from "app/components/LoginForm/LoginForm";
 
 export default function LoginPage() {
   const { status } = useSession();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
-    }
-  }, [status, router]);
-
-  const handleCredentialsLogin = async (e: React.FormEvent) => {
+  const handleCredentialsLogin = async (e: any, userInfo: any) => {
     e.preventDefault();
-    const result = await signIn("credentials", {
-      redirect: false,
-      username,
-      password,
-    });
+    const { username, password } = userInfo;
 
-    if (result?.error) {
-      alert("Login failed: " + result.error);
-    } else {
-      alert("Login successful!");
-      router.push("/");
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        username,
+        password,
+      });
+
+      if (result?.error) {
+        alert("Login failed: " + result.error);
+      } else {
+        console.log("Login successful");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      alert("An error occurred during login.");
     }
   };
 
-  // Show a loading indicator while checking the session status
+  const handleCreateNewUser = async (e: React.FormEvent, user: { username: string; password: string }) => {
+    e.preventDefault();
+  
+    if (!user.username || !user.password) {
+      alert("Both username and password are required.");
+      return;  // Stop execution if either field is missing
+    }
+    const {username, password} = user;
+    const res = await signIn("credentials", {
+      redirect: false,  // Prevent automatic redirection
+      username,
+      password
+    });
+  
+    if (res?.error) {
+      // Xử lý lỗi nếu có, ví dụ: nếu username đã tồn tại
+      console.error("Login error:", res.error);
+    } else {
+      // Nếu không có lỗi, có thể chuyển hướng đến trang chính hoặc dashboard
+      console.log("User logged in or created successfully");
+    }
+  };
   if (status === "loading") {
     return <p>Loading...</p>;
   }
 
-  // Render the login form only if the user is not authenticated
   if (status === "unauthenticated") {
-    return (
-      <div className={styles.login_page}>
-        <div className={styles.page}>
-          <h1>Login</h1>
-          <form onSubmit={handleCredentialsLogin}>
-            <div>
-              <label>
-                Username:
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </label>
-            </div>
-            <div>
-              <label>
-                Password:
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </label>
-            </div>
-            <button type="submit">Sign in with Username/Password</button>
-          </form>
-          <hr />
-          <button
-            onClick={() =>
-              signIn("google", { callbackUrl: "http://localhost:3000" })
-            }
-          >
-            Sign in with Google
-          </button>
-        </div>
-      </div>
-    );
+    return <LoginForm 
+    handleCredentialsLogin={handleCredentialsLogin} 
+    handleCreateNewUser={handleCreateNewUser}
+    />;
   }
 
-  // If authenticated, don't show the login page at all
   return null;
 }

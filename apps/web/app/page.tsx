@@ -1,4 +1,11 @@
-
+import style from "./index.module.css";
 export default function Home() {
-  return <h1>Welcome to the Homepage!</h1>;
+  return (
+    <div>
+      Welcome to the Homepage!
+      <div className={style.container}>
+        <p>center sdsdsd</p>
+      </div>
+    </div>
+  );
 }
