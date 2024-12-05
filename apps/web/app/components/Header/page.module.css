@@ -2,9 +2,9 @@
   display: flex;
   justify-content: space-between;
   padding: 0 20px;
-  ul {
+  .tag_ul {
     display: flex;
-    li {
+    .tag_li {
       list-style: none;
       &:not(:last-child) {
         margin-right: 10px;

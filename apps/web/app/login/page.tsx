@@ -7,9 +7,11 @@ import styles from "./page.module.css";
 
 export default function LoginPage() {
   const { status } = useSession();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -19,9 +21,10 @@ export default function LoginPage() {
 
   const handleCredentialsLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     const result = await signIn("credentials", {
       redirect: false,
-      username,
+      email,
       password,
     });
 
@@ -33,7 +36,39 @@ export default function LoginPage() {
     }
   };
 
-  // Show a loading indicator while checking the session status
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if(!email && !password) {
+      setError("Please fill out email and password");
+      return;
+    }
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: 'newbie',
+          email,
+          password,
+          provider: "email"
+        }),
+      })
+
+      if(res.ok) {
+        setEmail("")
+        setPassword("")
+      } else {
+        setError("Register failed. Please try again")
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+   
+  };
+
   if (status === "loading") {
     return <p>Loading...</p>;
   }
@@ -44,14 +79,15 @@ export default function LoginPage() {
       <div className={styles.login_page}>
         <div className={styles.page}>
           <h1>Login</h1>
-          <form onSubmit={handleCredentialsLogin}>
+          <form onSubmit={isSignUp ? handleSignUp : handleCredentialsLogin}>
             <div>
               <label>
-                Username:
+                email:
                 <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </label>
             </div>
@@ -59,15 +95,26 @@ export default function LoginPage() {
               <label>
                 Password:
                 <input
+                  required
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </label>
             </div>
-            <button type="submit">Sign in with Username/Password</button>
+            <button type="submit">
+              {isSignUp ? "Sign Up" : "Sign In with Username/Password"}
+            </button>
+            <div>
+              {/* Toggle between Sign Up and Sign In */}
+              <button type="button" onClick={() => setIsSignUp(!isSignUp)}>
+                {isSignUp
+                  ? "Already have an account? Sign In"
+                  : "Don't have an account? Sign Up"}
+              </button>
+            </div>
           </form>
-          <hr />
+          <br />
           <button
             onClick={() =>
               signIn("google", { callbackUrl: "http://localhost:3000" })

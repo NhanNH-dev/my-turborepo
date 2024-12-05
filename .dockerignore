@@ -1,0 +1,18 @@
+# Loại bỏ thư mục node_modules
+node_modules/
+
+# Loại bỏ tất cả các tệp log
+*.log
+
+# Loại bỏ tệp cấu hình hệ thống
+.git/
+.vscode/
+
+# Loại bỏ tệp tạm thời hoặc build
+dist/
+build/
+*.tmp
+
+# Loại bỏ tệp cấu hình của Docker
+Dockerfile
+.dockerignore

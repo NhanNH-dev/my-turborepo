@@ -1,11 +1,32 @@
+// {
+//   "extends": "@repo/typescript-config/nextjs.json",
+//   "compilerOptions": {
+//     "plugins": [
+//       {
+//         "name": "next"
+//       }
+//     ]
+//   },
+//   "include": [
+//     "next-env.d.ts",
+//     "next.config.mjs",
+//     "**/*.ts",
+//     "**/*.tsx",
+//     ".next/types/**/*.ts"
+//   ],
+//   "exclude": ["node_modules"]
+// }
 {
-  "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "target": "ES5",                    // Chỉ định phiên bản JavaScript đầu ra
+    "lib": ["dom", "esnext"],            // Chọn các thư viện TypeScript cần sử dụng
+    "module": "ESNext",                  // Sử dụng module ESNext
+    "moduleResolution": "node",          // Sử dụng cơ chế module resolution của Node.js
+    "strict": true,                      // Bật chế độ kiểm tra nghiêm ngặt
+    "jsx": "react-jsx",                  // Cấu hình JSX cho React 17+
+    "esModuleInterop": true,             // Hỗ trợ ES module interop
+    "skipLibCheck": true,                // Bỏ qua kiểm tra thư viện
+    "forceConsistentCasingInFileNames": true // Buộc các tên file phải nhất quán
   },
   "include": [
     "next-env.d.ts",
